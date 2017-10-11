@@ -91,6 +91,7 @@ int GetHA(pcap_t *handle, const struct ether_addr *srcHA, const struct in_addr *
 		break;
 	}
 
+	free(packet);
 
 	return 1;
 }

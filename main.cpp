@@ -36,6 +36,7 @@ int main(int argc, char* argv[]) {
 	my_assert( (len = GenARPPacket(packet+tot_len, ARPOP_REPLY, &attack_ha, &target_ip, &sender_ha, &sender_ip)) >= 0, "Error on Generate ARP Packet\n"); tot_len += len;
 
 	my_assert( pcap_sendpacket(handle, packet, tot_len) == 0, "Error sending the packet: %s\n", pcap_geterr(handle));
+	free(packet);
 
 
 	return 0;
